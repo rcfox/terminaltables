@@ -2,6 +2,7 @@
 
 import re
 import unicodedata
+import textwrap
 
 from terminaltables.terminal_io import terminal_size
 
@@ -59,6 +60,9 @@ def align_and_pad_cell(string, align, inner_dimensions, padding, space=' '):
     if string.endswith('\n'):
         lines.append('')
 
+    flatten = lambda l: [item for sublist in l for item in sublist]
+    lines = flatten([textwrap.wrap(line, inner_dimensions[0]) for i, line in enumerate(lines)])
+
     # Vertically align and pad.
     if 'bottom' in align:
         lines = ([''] * (inner_dimensions[1] - len(lines) + padding[2])) + lines + ([''] * padding[3])
@@ -81,7 +85,7 @@ def align_and_pad_cell(string, align, inner_dimensions, padding, space=' '):
     return lines
 
 
-def max_dimensions(table_data, padding_left=0, padding_right=0, padding_top=0, padding_bottom=0):
+def max_dimensions(table_data, padding_left=0, padding_right=0, padding_top=0, padding_bottom=0, max_width=None):
     """Get maximum widths of each column and maximum height of each row.
 
     :param iter table_data: List of list of strings (unmodified table data).
@@ -108,6 +112,27 @@ def max_dimensions(table_data, padding_left=0, padding_right=0, padding_top=0, p
 
     # Calculate with padding.
     outer_widths = [padding_left + i + padding_right for i in inner_widths]
+
+    ncols = len(inner_widths)
+    content_width = sum(outer_widths)
+    deco_width = (padding_right + padding_left + 1) * ncols + 1
+
+    if max_width is not None and max_width < content_width + deco_width:
+        available_width = max_width - deco_width
+        new_max = [0] * len(inner_widths)
+        i = 0
+        while available_width > 0:
+            if new_max[i] < inner_widths[i]:
+                new_max[i] += 1
+                available_width -= 1
+            i = (i + 1) % ncols
+        inner_widths = new_max
+        outer_widths = [padding_left + i + padding_right for i in inner_widths]
+
+        for j, row in enumerate(table_data):
+            for i, cell in enumerate(row):
+                inner_heights[j] = max(inner_heights[j], len(textwrap.wrap(cell, inner_widths[i])))
+
     outer_heights = [padding_top + i + padding_bottom for i in inner_heights]
 
     return inner_widths, inner_heights, outer_widths, outer_heights

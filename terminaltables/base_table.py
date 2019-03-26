@@ -67,6 +67,7 @@ class BaseTable(object):
         self.justify_columns = dict()  # {0: 'right', 1: 'left', 2: 'center'}
         self.padding_left = 1
         self.padding_right = 1
+        self.max_width = None
 
     def horizontal_border(self, style, outer_widths):
         """Build any kind of horizontal border for the table.
@@ -213,5 +214,5 @@ class BaseTable(object):
     @property
     def table(self):
         """Return a large string of the entire table ready to be printed to the terminal."""
-        dimensions = max_dimensions(self.table_data, self.padding_left, self.padding_right)[:3]
+        dimensions = max_dimensions(self.table_data, self.padding_left, self.padding_right, max_width=self.max_width)[:3]
         return flatten(self.gen_table(*dimensions))
