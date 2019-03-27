@@ -64,7 +64,7 @@ def align_and_pad_cell(string, align, inner_dimensions, padding, space=' '):
         lines.append('')
 
     flatten = lambda l: [item for sublist in l for item in sublist]
-    lines = flatten([textwrap.wrap(line, inner_dimensions[0]) for i, line in enumerate(lines)])
+    lines = flatten([textwrap.wrap(line, inner_dimensions[0] or 1) for i, line in enumerate(lines)])
 
     # Vertically align and pad.
     if 'bottom' in align:
@@ -134,7 +134,7 @@ def max_dimensions(table_data, padding_left=0, padding_right=0, padding_top=0, p
 
         for j, row in enumerate(table_data):
             for i, cell in enumerate(row):
-                inner_heights[j] = max(inner_heights[j], len(textwrap.wrap(cell, inner_widths[i])))
+                inner_heights[j] = max(inner_heights[j], len(textwrap.wrap(cell, inner_widths[i] or 1)))
 
     outer_heights = [padding_top + i + padding_bottom for i in inner_heights]
 
