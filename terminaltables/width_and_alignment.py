@@ -34,6 +34,9 @@ def visible_width(string):
     for char in string:
         if unicodedata.east_asian_width(char) in ('F', 'W'):
             width += 2
+        # Handle table codes.
+        elif char == '\x1b':
+            width -= 2
         else:
             width += 1
 
