@@ -118,7 +118,7 @@ def max_dimensions(table_data, padding_left=0, padding_right=0, padding_top=0, p
 
     ncols = len(inner_widths)
     content_width = sum(inner_widths)
-    deco_width = (padding_right + padding_left + 1) * ncols + 1
+    deco_width = (padding_right + padding_left + 1) * ncols
 
     if max_width is not None and max_width < content_width + deco_width:
         available_width = max_width - deco_width
